@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-fb%188sbtdiv=sv)x^qr5fx98igzhzvi&3bq2$k5w*14jbl^d#
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost','127.0.0.1' ,'10.11.196.109', '10.11.196.129' ]
+ALLOWED_HOSTS = ['localhost','127.0.0.1' ,'10.11.196.109', '10.11.196.129', 'tega.pythonanywhere.com']
 
 
 # Application definition
@@ -49,6 +49,13 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+# settings.py
+
+# Session settings
+SESSION_COOKIE_AGE = 120  # Set session age to 30 minutes (1800 seconds)
+SESSION_EXPIRE_AT_BROWSER_CLOSE = False  # Do not expire session on browser close (we'll handle it via JavaScript)
+SESSION_SAVE_EVERY_REQUEST = True  # Save the session on every request to update the expiration time
 
 ROOT_URLCONF = 'todo_list.urls'
 

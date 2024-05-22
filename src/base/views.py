@@ -26,10 +26,17 @@ class CustomLoginView(LoginView):
     def get_success_url(self):
         return reverse_lazy('tasks')
 
+# views.py
+
+from django.contrib.auth import login
+from django.shortcuts import redirect
+from django.urls import reverse_lazy
+from django.views.generic.edit import FormView
+from .forms import CustomUserCreationForm
 
 class RegisterPage(FormView):
     template_name = 'base/register.html'
-    form_class = UserCreationForm
+    form_class = CustomUserCreationForm
     redirect_authenticated_user = True
     success_url = reverse_lazy('tasks')
 
@@ -43,6 +50,24 @@ class RegisterPage(FormView):
         if self.request.user.is_authenticated:
             return redirect('tasks')
         return super(RegisterPage, self).get(*args, **kwargs)
+
+
+# class RegisterPage(FormView):
+#     template_name = 'base/register.html'
+#     form_class = UserCreationForm
+#     redirect_authenticated_user = True
+#     success_url = reverse_lazy('tasks')
+
+#     def form_valid(self, form):
+#         user = form.save()
+#         if user is not None:
+#             login(self.request, user)
+#         return super(RegisterPage, self).form_valid(form)
+
+#     def get(self, *args, **kwargs):
+#         if self.request.user.is_authenticated:
+#             return redirect('tasks')
+#         return super(RegisterPage, self).get(*args, **kwargs)
 
 
 class TaskList(LoginRequiredMixin, ListView):
@@ -105,3 +130,19 @@ class TaskReorder(View):
                 self.request.user.set_task_order(positionList)
 
         return redirect(reverse_lazy('tasks'))
+
+# views.py
+
+from django.contrib.auth import logout
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+
+@csrf_exempt
+def logout_view(request):
+    if request.method == 'POST':
+        logout(request)
+        return JsonResponse({'status': 'success'})
+    elif request.method == 'GET':
+        logout(request)
+        return redirect('login')
+    return JsonResponse({'status': 'failed'}, status=400)

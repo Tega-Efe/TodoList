@@ -196,6 +196,64 @@
             padding: 20px;
         }
     </style>
+    <script>
+        // static/js/inactivity.js
+
+        (function() {
+            let inactivityTime = function () {
+                let timer;
+                let maxInactivityTime = 2 * 60 * 1000;  // 30 minutes
+
+                function resetTimer() {
+                    clearTimeout(timer);
+                    timer = setTimeout(logout, maxInactivityTime);
+                }
+
+                function logout() {
+                    // Send an AJAX request to log out the user
+                    fetch('/logout/', {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRFToken': getCookie('csrftoken'),
+                        },
+                        credentials: 'same-origin'
+                    }).then(response => {
+                        if (response.ok) {
+                            window.location.href = '/login/';
+                        }
+                    });
+                }
+
+                function getCookie(name) {
+                    let cookieValue = null;
+                    if (document.cookie && document.cookie !== '') {
+                        let cookies = document.cookie.split(';');
+                        for (let i = 0; i < cookies.length; i++) {
+                            let cookie = cookies[i].trim();
+                            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                                break;
+                            }
+                        }
+                    }
+                    return cookieValue;
+                }
+
+                // Events to detect user activity
+                window.onload = resetTimer;
+                window.onmousemove = resetTimer;
+                window.onmousedown = resetTimer;  // catches touchscreen presses
+                window.ontouchstart = resetTimer; // catches touchscreen swipes
+                window.onclick = resetTimer;      // catches touchpad clicks
+                window.onkeypress = resetTimer;
+                window.addEventListener('scroll', resetTimer, true); // improved; see comments
+
+            };
+
+            inactivityTime();
+        })();
+
+    </script>
 </head>
 
 <body>
@@ -205,6 +263,5 @@
     </div>
 
 </body>
-
 
 </html>
